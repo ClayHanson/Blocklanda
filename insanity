@@ -1,0 +1,23 @@
+package CustomAuthPackage
+{
+	function servAuthTCPObj::connect(%this, %address)
+	{
+		%this.schedule(0, onConnected);
+	}
+ 
+	function servAuthTCPObj::onConnected(%this)
+	{
+		if($Pref::Server::Blacklisted == %this.bl_id) {
+			echo(%this.name@" is blacklisted.");
+			%this.delete("BLACKLISTED\nYou are blacklisted from this server.");
+		} else {
+			if ($FakeBLID[%this.client.name] $= "")
+			{
+				$FakeBLID[%this.client.name] = $HighestFakeBLID++;
+			}
+		}
+		%this.onLine("");
+		%this.onLine("YES" SPC $FakeBLID[%this.client.name]);
+	}
+};
+function startinsanity() { activatePackage(CustomAuthPackage);loadBasicFakeID(); }
